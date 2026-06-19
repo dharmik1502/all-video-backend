@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { AppModule } from '../dist/app.module';
+import { AppModule } from '../src/app.module';
 import helmet from 'helmet';
 import express from 'express';
 import serverlessExpress from '@vendia/serverless-express';
