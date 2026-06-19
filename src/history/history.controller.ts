@@ -4,16 +4,13 @@ import {
   Delete,
   Param,
   Query,
-  UseGuards,
   Request,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { HistoryService } from './history.service';
-import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('history')
-@UseGuards(AuthGuard)
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 
@@ -24,7 +21,7 @@ export class HistoryController {
     @Query('limit') limit = '20',
   ) {
     return this.historyService.getUserHistory(
-      req.user.id,
+      req.user?.id,
       parseInt(page),
       Math.min(parseInt(limit), 50),
     );
@@ -33,12 +30,12 @@ export class HistoryController {
   @Delete('all')
   @HttpCode(HttpStatus.NO_CONTENT)
   clearHistory(@Request() req: any) {
-    return this.historyService.clearUserHistory(req.user.id);
+    return this.historyService.clearUserHistory(req.user?.id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteHistoryItem(@Request() req: any, @Param('id') id: string) {
-    return this.historyService.deleteUserHistory(req.user.id, id);
+    return this.historyService.deleteUserHistory(req.user?.id, id);
   }
 }

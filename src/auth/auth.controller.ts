@@ -4,12 +4,10 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UseGuards,
   Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto, SignInDto } from './dto/auth.dto';
-import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,7 +27,6 @@ export class AuthController {
 
   @Post('signout')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
   signOut(@Request() req: any) {
     const token = req.headers.authorization?.split(' ')[1];
     return this.authService.signOut(token);

@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  UseGuards,
   Request,
   HttpCode,
   HttpStatus,
@@ -10,7 +9,6 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { DownloadService } from './download.service';
 import { DownloadRequestDto } from './dto/download.dto';
-import { OptionalAuthGuard } from '../auth/optional-auth.guard';
 import { HistoryService } from '../history/history.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 
@@ -24,7 +22,6 @@ export class DownloadController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  @UseGuards(OptionalAuthGuard)
   @Throttle({ default: { ttl: 60000, limit: 10 } })
   async download(@Body() dto: DownloadRequestDto, @Request() req: any) {
     const result = await this.downloadService.extract(dto);
