@@ -51,12 +51,14 @@ export class TwitterParser extends BaseParser {
 
       return {
         success: true,
-        platform: 'twitter',
-        title: data.author_name ? `${data.author_name}'s tweet` : 'Twitter Post',
-        author: data.author_name,
-        thumbnail: thumbMatch ? thumbMatch[1] : undefined,
-        medias: [],
-        description: 'Use Twitter API for direct video download.',
+        metadata: {
+          platform: 'twitter',
+          title: data.author_name ? `${data.author_name}'s tweet` : 'Twitter Post',
+          author: data.author_name,
+          thumbnail: thumbMatch ? thumbMatch[1] : undefined,
+          description: 'Use Twitter API for direct video download.',
+        },
+        urls: [],
       };
     } catch {
       return null;

@@ -64,7 +64,7 @@ export class DownloadService {
       case 'pinterest':
         return this.pinterest.parse(url);
       default:
-        return { success: false, platform, medias: [], title: 'Unsupported platform' };
+        return { success: false, metadata: { platform, title: 'Unsupported platform' }, urls: [] };
     }
   }
 }

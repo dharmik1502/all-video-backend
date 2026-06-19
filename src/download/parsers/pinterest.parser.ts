@@ -39,11 +39,11 @@ export class PinterestParser extends BaseParser {
     const ogVideo = $('meta[property="og:video"]').attr('content') ?? '';
     const ogVideoSecure = $('meta[property="og:video:secure_url"]').attr('content') ?? '';
 
-    const medias: MediaInfoDto['medias'] = [];
+    const urls: MediaInfoDto['urls'] = [];
 
     const videoUrl = ogVideoSecure || ogVideo;
     if (videoUrl) {
-      medias.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
+      urls.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
     }
 
     // Pinterest images come in multiple resolutions — try to get highest quality
@@ -54,24 +54,26 @@ export class PinterestParser extends BaseParser {
         .replace('/474x/', '/originals/')
         .replace('/736x/', '/originals/');
 
-      medias.push({ url: hdImage, type: 'image', quality: 'original', extension: 'jpg' });
+      urls.push({ url: hdImage, type: 'image', quality: 'original', extension: 'jpg' });
 
       if (hdImage !== ogImage) {
-        medias.push({ url: ogImage, type: 'image', quality: 'sd', extension: 'jpg' });
+        urls.push({ url: ogImage, type: 'image', quality: 'sd', extension: 'jpg' });
       }
     }
 
-    if (medias.length === 0) {
-      return this.buildError('Pinterest media not found.');
+    if (urls.length === 0) {
+      return this.buildError('Pinterest media not found.', 'pinterest');
     }
 
     return {
       success: true,
-      platform: 'pinterest',
-      title: ogTitle,
-      description: ogDescription,
-      thumbnail: ogImage,
-      medias,
+      metadata: {
+        platform: 'pinterest',
+        title: ogTitle,
+        description: ogDescription,
+        thumbnail: ogImage,
+      },
+      urls,
     };
   }
 }

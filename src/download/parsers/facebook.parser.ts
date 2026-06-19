@@ -41,14 +41,14 @@ export class FacebookParser extends BaseParser {
     const ogVideo = $('meta[property="og:video"]').attr('content') ?? '';
     const ogVideoSecure = $('meta[property="og:video:secure_url"]').attr('content') ?? '';
 
-    const medias: MediaInfoDto['medias'] = [];
+    const urls: MediaInfoDto['urls'] = [];
 
     // Try to find HD video in page source
     const hdMatch = html.match(/"hd_src":"([^"]+)"/);
     const sdMatch = html.match(/"sd_src":"([^"]+)"/);
 
     if (hdMatch) {
-      medias.push({
+      urls.push({
         url: hdMatch[1].replace(/\\/g, ''),
         type: 'video',
         quality: 'hd',
@@ -57,7 +57,7 @@ export class FacebookParser extends BaseParser {
     }
 
     if (sdMatch) {
-      medias.push({
+      urls.push({
         url: sdMatch[1].replace(/\\/g, ''),
         type: 'video',
         quality: 'sd',
@@ -67,20 +67,22 @@ export class FacebookParser extends BaseParser {
 
     const videoUrl = ogVideoSecure || ogVideo;
     if (!hdMatch && !sdMatch && videoUrl) {
-      medias.push({ url: videoUrl, type: 'video', quality: 'sd', extension: 'mp4' });
+      urls.push({ url: videoUrl, type: 'video', quality: 'sd', extension: 'mp4' });
     }
 
-    if (medias.length === 0) {
-      return this.buildError('Facebook video not found. Video may be private.');
+    if (urls.length === 0) {
+      return this.buildError('Facebook video not found. Video may be private.', 'facebook');
     }
 
     return {
       success: true,
-      platform: 'facebook',
-      title: ogTitle,
-      description: ogDescription,
-      thumbnail: ogImage,
-      medias,
+      metadata: {
+        platform: 'facebook',
+        title: ogTitle,
+        description: ogDescription,
+        thumbnail: ogImage,
+      },
+      urls,
     };
   }
 }

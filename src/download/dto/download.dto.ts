@@ -13,15 +13,13 @@ export class DownloadRequestDto {
   quality?: 'hd' | 'sd';
 }
 
-export class MediaInfoDto {
-  success: boolean;
+export class MediaMetadataDto {
   platform: string;
   title?: string;
   description?: string;
   thumbnail?: string;
   author?: string;
   duration?: number;
-  medias: MediaItemDto[];
 }
 
 export class MediaItemDto {
@@ -30,4 +28,10 @@ export class MediaItemDto {
   type: 'video' | 'image' | 'audio';
   extension?: string;
   size?: number;
+}
+
+export class MediaInfoDto {
+  success: boolean;
+  metadata: MediaMetadataDto;
+  urls: MediaItemDto[];
 }

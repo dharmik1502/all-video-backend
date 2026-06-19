@@ -41,28 +41,30 @@ export class InstagramParser extends BaseParser {
     const ogVideo = $('meta[property="og:video"]').attr('content') ?? '';
     const ogVideoSecure = $('meta[property="og:video:secure_url"]').attr('content') ?? '';
 
-    const medias: MediaInfoDto['medias'] = [];
+    const urls: MediaInfoDto['urls'] = [];
 
     const videoUrl = ogVideoSecure || ogVideo;
     if (videoUrl) {
-      medias.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
+      urls.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
     }
 
     if (ogImage && !videoUrl) {
-      medias.push({ url: ogImage, type: 'image', quality: 'original', extension: 'jpg' });
+      urls.push({ url: ogImage, type: 'image', quality: 'original', extension: 'jpg' });
     }
 
-    if (medias.length === 0) {
-      return this.buildError('Could not extract media. Post may be private.');
+    if (urls.length === 0) {
+      return this.buildError('Could not extract media. Post may be private.', 'instagram');
     }
 
     return {
       success: true,
-      platform: 'instagram',
-      title: ogTitle.replace(' • Instagram', '').trim(),
-      description: ogDescription,
-      thumbnail: ogImage,
-      medias,
+      metadata: {
+        platform: 'instagram',
+        title: ogTitle.replace(' • Instagram', '').trim(),
+        description: ogDescription,
+        thumbnail: ogImage,
+      },
+      urls,
     };
   }
 }

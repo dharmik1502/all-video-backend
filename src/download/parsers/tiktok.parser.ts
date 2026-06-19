@@ -45,11 +45,11 @@ export class TiktokParser extends BaseParser {
     const ogVideo = $('meta[property="og:video"]').attr('content') ?? '';
     const ogVideoSecure = $('meta[property="og:video:secure_url"]').attr('content') ?? '';
 
-    const medias: MediaInfoDto['medias'] = [];
+    const urls: MediaInfoDto['urls'] = [];
 
     const videoUrl = ogVideoSecure || ogVideo;
     if (videoUrl) {
-      medias.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
+      urls.push({ url: videoUrl, type: 'video', quality: 'hd', extension: 'mp4' });
     }
 
     // Try to find video data in JSON-LD
@@ -58,7 +58,7 @@ export class TiktokParser extends BaseParser {
       try {
         const jsonData = JSON.parse(jsonLdScript);
         if (jsonData.contentUrl && !videoUrl) {
-          medias.push({
+          urls.push({
             url: jsonData.contentUrl,
             type: 'video',
             quality: 'hd',
@@ -68,8 +68,8 @@ export class TiktokParser extends BaseParser {
       } catch { /* ignore */ }
     }
 
-    if (medias.length === 0) {
-      return this.buildError('TikTok video not accessible. May be private or deleted.');
+    if (urls.length === 0) {
+      return this.buildError('TikTok video not accessible. May be private or deleted.', 'tiktok');
     }
 
     // Extract author from URL @username
@@ -77,12 +77,14 @@ export class TiktokParser extends BaseParser {
 
     return {
       success: true,
-      platform: 'tiktok',
-      title: ogTitle,
-      description: ogDescription,
-      thumbnail: ogImage,
-      author: authorMatch ? `@${authorMatch[1]}` : undefined,
-      medias,
+      metadata: {
+        platform: 'tiktok',
+        title: ogTitle,
+        description: ogDescription,
+        thumbnail: ogImage,
+        author: authorMatch ? `@${authorMatch[1]}` : undefined,
+      },
+      urls,
     };
   }
 }

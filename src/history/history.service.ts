@@ -13,10 +13,10 @@ export class HistoryService {
       await this.supabase.getAdminClient().from('download_history').insert({
         user_id: userId,
         url,
-        platform: result.platform,
-        title: result.title ?? null,
-        thumbnail: result.thumbnail ?? null,
-        media_count: result.medias.length,
+        platform: result.metadata.platform,
+        title: result.metadata.title ?? null,
+        thumbnail: result.metadata.thumbnail ?? null,
+        media_count: result.urls.length,
         created_at: new Date().toISOString(),
       });
     } catch (error) {

@@ -5,6 +5,7 @@
       "src": "api/index.ts",
       "use": "@vercel/node",
       "config": {
+        "includeFiles": ["dist/**"],
         "memory": 1024,
         "maxDuration": 30
       }

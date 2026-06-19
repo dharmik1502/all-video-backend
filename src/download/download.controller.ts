@@ -34,7 +34,7 @@ export class DownloadController {
     // Fire-and-forget: don't await to keep response fast
     if (result.success) {
       this.historyService.save(userId, dto.url, result).catch(() => {});
-      this.analyticsService.track(result.platform, userId).catch(() => {});
+      this.analyticsService.track(result.metadata.platform, userId).catch(() => {});
     }
 
     return result;

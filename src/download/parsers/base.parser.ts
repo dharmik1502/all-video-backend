@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { MediaInfoDto } from '../dto/download.dto';
+import { MediaInfoDto, MediaItemDto } from '../dto/download.dto';
 
 export abstract class BaseParser {
   protected http: AxiosInstance;
@@ -20,12 +20,11 @@ export abstract class BaseParser {
 
   abstract parse(url: string): Promise<MediaInfoDto>;
 
-  protected buildError(message: string): MediaInfoDto {
+  protected buildError(message: string, platform = 'unknown'): MediaInfoDto {
     return {
       success: false,
-      platform: 'unknown',
-      medias: [],
-      title: message,
+      metadata: { platform, title: message },
+      urls: [],
     };
   }
 
