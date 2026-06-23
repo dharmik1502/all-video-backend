@@ -53,7 +53,66 @@ export class InstagramParser extends BaseParser {
     }
 
     if (urls.length === 0) {
-      return this.buildError('Could not extract media. Post may be private.', 'instagram');
+      // Try JSON-LD first
+      const jsonLd = $('script[type="application/ld+json"]').first().html();
+      if (jsonLd) {
+        try {
+          const data = JSON.parse(jsonLd);
+          if (data && data.contentUrl) {
+            urls.push({ url: data.contentUrl, type: 'video', quality: 'hd', extension: 'mp4' });
+          }
+        } catch (e) {
+          this.logger.debug('Instagram JSON-LD parse failed');
+        }
+      }
+
+      // Try window._sharedData embedded script (older Instagram pages)
+      if (urls.length === 0) {
+        const scripts = $('script')
+          .map((i, el) => $(el).html())
+          .get()
+          .filter(Boolean);
+
+        for (const s of scripts) {
+          if (s.includes('window._sharedData')) {
+            try {
+              const m = s.match(/window\._sharedData\s*=\s*(\{.*\});/s);
+              if (m && m[1]) {
+                const shared = JSON.parse(m[1]);
+                const media =
+                  shared?.entry_data?.PostPage?.[0]?.graphql?.shortcode_media ||
+                  shared?.entry_data?.VideoPage?.[0]?.graphql?.shortcode_media;
+                if (media) {
+                  if (media.video_url) {
+                    urls.push({ url: media.video_url, type: 'video', quality: 'hd', extension: 'mp4' });
+                  } else if (media.display_url) {
+                    urls.push({ url: media.display_url, type: 'image', quality: 'original', extension: 'jpg' });
+                  } else if (media.edge_sidecar_to_children?.edges) {
+                    for (const edge of media.edge_sidecar_to_children.edges) {
+                      const node = edge.node;
+                      if (node.video_url) {
+                        urls.push({ url: node.video_url, type: 'video', quality: 'hd', extension: 'mp4' });
+                      } else if (node.display_url) {
+                        urls.push({ url: node.display_url, type: 'image', quality: 'original', extension: 'jpg' });
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              this.logger.debug('Instagram sharedData parse failed');
+            }
+            break;
+          }
+        }
+      }
+
+      if (urls.length === 0) {
+        try {
+          this.logger.debug('Instagram extract failed — page snippet: ' + html.slice(0, 2000));
+        } catch {}
+        return this.buildError('Could not extract media. Post may be private.', 'instagram');
+      }
     }
 
     return {
