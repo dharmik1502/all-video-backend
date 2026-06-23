@@ -20,6 +20,16 @@ try {
 const expressApp = express();
 let isInitialized = false;
 
+// Provide a lightweight root endpoint so requests to `/` don't return "Cannot GET /".
+// This helps Vercel function root requests and gives a quick health/info response.
+expressApp.get('/', (_req, res) => {
+  res.json({
+    message: 'API is running',
+    docs: '/api-docs.html',
+    health: '/api/v1/health',
+  });
+});
+
 async function bootstrap() {
   if (!isInitialized) {
     const nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
