@@ -3,7 +3,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import helmet from 'helmet';
 import express from 'express';
-import serverlessExpress from '@vendia/serverless-express';
 import type { Request, Response } from 'express';
 
 // Prefer compiled/dist app module when available (reduces runtime transpile issues on Vercel)
@@ -19,10 +18,10 @@ try {
   }
 
 const expressApp = express();
-let cachedServer: ReturnType<typeof serverlessExpress>;
+let isInitialized = false;
 
 async function bootstrap() {
-  if (!cachedServer) {
+  if (!isInitialized) {
     const nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
 
     nestApp.use(helmet());
@@ -40,16 +39,18 @@ async function bootstrap() {
     );
     nestApp.setGlobalPrefix('api/v1');
     await nestApp.init();
-    cachedServer = serverlessExpress({ app: expressApp });
-    console.log('Nest server initialized and cached');
+    isInitialized = true;
+    console.log('Nest server initialized');
   }
-  return cachedServer;
+  return undefined;
 }
 
 export default async (req: Request, res: Response) => {
   try {
-    const server = await bootstrap();
-    return server(req, res, () => undefined);
+    await bootstrap();
+    // Invoke the underlying Express app directly. This avoids runtime
+    // detection issues from @vendia/serverless-express on Vercel.
+    return expressApp(req, res);
   } catch (err: any) {
     // Log full error so Vercel function logs capture it
     console.error('Function bootstrap error:', err && err.stack ? err.stack : err);
