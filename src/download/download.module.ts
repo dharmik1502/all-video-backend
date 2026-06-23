@@ -4,7 +4,6 @@ import { DownloadService } from './download.service';
 import { InstagramParser } from './parsers/instagram.parser';
 import { FacebookParser } from './parsers/facebook.parser';
 import { TwitterParser } from './parsers/twitter.parser';
-import { TiktokParser } from './parsers/tiktok.parser';
 import { PinterestParser } from './parsers/pinterest.parser';
 import { HistoryModule } from '../history/history.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
@@ -17,7 +16,6 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     InstagramParser,
     FacebookParser,
     TwitterParser,
-    TiktokParser,
     PinterestParser,
   ],
 })

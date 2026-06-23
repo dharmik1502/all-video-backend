@@ -19,7 +19,7 @@ import { HealthController } from './health/health.controller';
 
     ThrottlerModule.forRoot([
       {
-        ttl: parseInt(process.env.THROTTLE_TTL ?? '60') * 1000,
+        ttl: parseInt(process.env.THROTTLE_TTL ?? '60'),
         limit: parseInt(process.env.THROTTLE_LIMIT ?? '30'),
       },
     ]),

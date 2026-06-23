@@ -6,7 +6,7 @@ import { detectPlatform, isSupportedPlatform } from './parsers/url-validator';
 import { InstagramParser } from './parsers/instagram.parser';
 import { FacebookParser } from './parsers/facebook.parser';
 import { TwitterParser } from './parsers/twitter.parser';
-import { TiktokParser } from './parsers/tiktok.parser';
+
 import { PinterestParser } from './parsers/pinterest.parser';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class DownloadService {
     private instagram: InstagramParser,
     private facebook: FacebookParser,
     private twitter: TwitterParser,
-    private tiktok: TiktokParser,
+
     private pinterest: PinterestParser,
   ) {}
 
@@ -59,8 +59,6 @@ export class DownloadService {
         return this.facebook.parse(url);
       case 'twitter':
         return this.twitter.parse(url);
-      case 'tiktok':
-        return this.tiktok.parse(url);
       case 'pinterest':
         return this.pinterest.parse(url);
       default:

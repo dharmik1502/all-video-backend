@@ -2,7 +2,6 @@ export type SupportedPlatform =
   | 'instagram'
   | 'facebook'
   | 'twitter'
-  | 'tiktok'
   | 'pinterest'
   | 'unknown';
 
@@ -20,11 +19,6 @@ const PLATFORM_PATTERNS: Record<SupportedPlatform, RegExp[]> = {
   twitter: [
     /^https?:\/\/(www\.)?(twitter|x)\.com\/\w+\/status\/\d+/,
     /^https?:\/\/t\.co\//,
-  ],
-  tiktok: [
-    /^https?:\/\/(www\.)?tiktok\.com\/@[\w.]+\/video\/\d+/,
-    /^https?:\/\/vm\.tiktok\.com\//,
-    /^https?:\/\/vt\.tiktok\.com\//,
   ],
   pinterest: [
     /^https?:\/\/(www\.)?pinterest\.(com|co\.\w+)\/pin\//,
