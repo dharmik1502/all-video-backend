@@ -51,8 +51,7 @@ export class InstagramParser extends BaseParser {
 
       return result;
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Instagram parse error: ${message}`);
+      this.logAxiosError(error, 'Instagram parse');
       return this.buildError('Instagram media could not be extracted. The post may be private or unavailable.');
     }
   }
@@ -129,8 +128,7 @@ export class InstagramParser extends BaseParser {
           };
         }
       } catch (e) {
-        const message = e instanceof Error ? e.message : String(e);
-        this.logger.debug(`RapidAPI Instagram fallback endpoint failed: ${endpoint} (${message})`);
+        this.logAxiosError(e, `RapidAPI fallback ${endpoint}`);
       }
     }
 
@@ -206,8 +204,7 @@ export class InstagramParser extends BaseParser {
         };
       }
     } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      this.logger.debug(`Instagram120 RapidAPI reels request failed: ${message}`);
+      this.logAxiosError(e, 'Instagram120 reels request failed');
     }
 
     return null;
@@ -216,6 +213,32 @@ export class InstagramParser extends BaseParser {
   private tryPushRapidApiUrl(urls: MediaInfoDto['urls'], url: any, type: 'video' | 'image', quality: string, extension: string) {
     if (typeof url === 'string' && url.trim()) {
       urls.push({ url: url.trim(), type, quality, extension });
+    }
+  }
+
+  private logAxiosError(err: any, context = 'error'): void {
+    try {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`${context}: ${msg}`);
+
+      try {
+        const serialized = JSON.stringify(err, Object.getOwnPropertyNames(err));
+        this.logger.debug(`${context} - full error: ${serialized}`);
+      } catch {
+        // ignore serialization errors
+      }
+
+      if (err && err.response) {
+        try {
+          const resp = err.response;
+          const respData = typeof resp.data === 'string' ? resp.data : JSON.stringify(resp.data);
+          this.logger.debug(`${context} - response status: ${resp.status} data: ${respData}`);
+        } catch {
+          // ignore
+        }
+      }
+    } catch {
+      // swallow logging errors
     }
   }
 
