@@ -396,9 +396,10 @@ export class InstagramParser extends BaseParser {
 
       if (urls.length === 0) {
         try {
-          this.logger.debug('Instagram extract failed — page snippet: ' + html.slice(0, 2000));
+          // Use error-level logging so it's visible in typical server logs
+          this.logger.error(`Instagram extract failed for ${url} — page snippet: ${html.slice(0, 2000)}`);
         } catch {}
-        return this.buildError('Could not extract media. Post may be private.', 'instagram');
+          return this.buildError('Could not extract media. Post may be private.', 'instagram');
       }
     }
 
